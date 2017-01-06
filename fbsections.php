@@ -182,7 +182,7 @@ foreach ($questionnaire->questions as $question) {
     $cannotuse = false;
     $strcannotuse = '';
     if ($qtype != QUESSECTIONTEXT && $qtype != QUESPAGEBREAK
-                    && ($qtype != QUESYESNO && $qtype != QUESRADIO && $qtype != QUESRATE
+                    && ($qtype != QUESCHECK && $qtype != QUESYESNO && $qtype != QUESRADIO && $qtype != QUESRATE
                     || $required != 'y' || $qname == '' || $question->dependquestion != 0)) {
         $cannotuse = true;
         $qn = '<strong>'.$n.'</strong>';
@@ -203,7 +203,7 @@ foreach ($questionnaire->questions as $question) {
 
     $qhasvalues = false;
     if (!$cannotuse) {
-        if ($qtype == QUESRADIO || $qtype == QUESDROP) {
+        if ($qtype == QUESCHECK || $qtype == QUESRADIO || $qtype == QUESDROP) {
             if ($choices = $DB->get_records('questionnaire_quest_choice', array('question_id' => $qid = $question->id))) {
                 foreach ($choices as $choice) {
                     if ($choice->value != null) {
