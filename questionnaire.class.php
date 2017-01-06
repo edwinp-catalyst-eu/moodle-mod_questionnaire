@@ -3035,7 +3035,7 @@ class questionnaire {
             $qid = $question->id;
             $qtype = $question->type_id;
             $required = $question->required;
-            if (($qtype == QUESRADIO || $qtype == QUESDROP || $qtype == QUESRATE) and $required == 'y') {
+            if (($qtype == QUESCHECK || $qtype == QUESRADIO || $qtype == QUESDROP || $qtype == QUESRATE) and $required == 'y') {
                 if (!isset($qmax[$qid])) {
                     $qmax[$qid] = 0;
                 }
@@ -3170,7 +3170,45 @@ class questionnaire {
                     }
                 }
             }
+
+            // Get responses for multiple (Checkboxes).
+            $sql = "SELECT a.choice_id as cid, q.id, q.type_id as q_type, c.content as ccontent, c.value as score
+                      FROM {questionnaire_resp_multiple} a
+                      JOIN {questionnaire_quest_choice} c ON c.id = a.choice_id
+                      JOIN {questionnaire_question} q ON q.id = a.question_id
+                      WHERE a.response_id = ?";
+            if ($responses = $DB->get_records_sql($sql, array($rrid))) {
+
+                $questionresponses = array();
+                foreach ($responses as $response) {
+                    if (!array_key_exists($response->cid, $questionresponses)) {
+                        $obj = new stdClass();
+                        $obj->cid = $response->cid;
+                        $obj->q_type = $response->q_type;
+                        $obj->ccontent = $response->ccontent;
+                        $obj->score = $response->score;
+                        $questionresponses[$response->id][$response->cid] = $obj;
+                    }
+                }
+
+                foreach ($questionresponses as $qid => $questionresponse) {
+                    // Course score.
+                    if (!isset($allqscore[$qid])) {
+                        $allqscore[$qid] = 0;
+                    }
+                    $questionscore = 0;
+                    foreach ($questionresponse as $questionchoice) {
+                        $questionscore += $questionchoice->score;
+                        // Only add current score if conditions below are met.
+                        if ($groupmode == 0 || $isgroupmember || (!$isgroupmember && $rrid != $rid) || $allresponses) {
+                            $allqscore[$qid] += $questionchoice->score;
+                        }
+                    }
+                    $qscore[$qid] = $questionscore;
+                }
+            }
         }
+
         $totalscore = array_sum($qscore);
         $scorepercent = round($totalscore / $maxtotalscore * 100);
         $oppositescorepercent = 100 - $scorepercent;
