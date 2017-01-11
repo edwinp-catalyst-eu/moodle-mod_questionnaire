@@ -3035,7 +3035,8 @@ class questionnaire {
             $qid = $question->id;
             $qtype = $question->type_id;
             $required = $question->required;
-            if (($qtype == QUESCHECK || $qtype == QUESRADIO || $qtype == QUESDROP || $qtype == QUESRATE) and $required == 'y') {
+            if (($qtype == QUESCHECK || // CATALYST Custom.
+                $qtype == QUESRADIO || $qtype == QUESDROP || $qtype == QUESRATE) and $required == 'y') {
                 if (!isset($qmax[$qid])) {
                     $qmax[$qid] = 0;
                 }
@@ -3171,6 +3172,7 @@ class questionnaire {
                 }
             }
 
+            // CATALYST Custom start.
             // Get responses for multiple (Checkboxes).
             $sql = "SELECT a.choice_id as cid, q.id, q.type_id as q_type, c.content as ccontent, c.value as score
                       FROM {questionnaire_resp_multiple} a
@@ -3196,6 +3198,7 @@ class questionnaire {
                     if (!isset($allqscore[$qid])) {
                         $allqscore[$qid] = 0;
                     }
+                    // Question score.
                     if (!isset($qscore[$qid])) {
                         $qscore[$qid] = 0;
                     }
@@ -3210,6 +3213,7 @@ class questionnaire {
                     $qscore[$qid] = $questionscore;
                 }
             }
+            // CATALYST Custom end.
         }
 
         $totalscore = array_sum($qscore);

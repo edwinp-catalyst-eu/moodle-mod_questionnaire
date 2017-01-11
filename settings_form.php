@@ -99,7 +99,8 @@ class questionnaire_settings_form extends moodleform {
             $qname = $question->name;
             $required = $question->required;
             // Question types accepted for feedback; QUESRATE ok except noduplicates.
-            if (($qtype == QUESCHECK || $qtype == QUESRADIO || $qtype == QUESDROP || ($qtype == QUESRATE && $question->precise != 2))
+            if (($qtype == QUESCHECK || // CATALYST custom.
+                $qtype == QUESRADIO || $qtype == QUESDROP || ($qtype == QUESRATE && $question->precise != 2))
                             && $required == 'y' && $qname != '') {
                 foreach ($question->choices as $choice) {
                     if (isset($choice->value) && $choice->value != null && $choice->value != 'NULL') {
