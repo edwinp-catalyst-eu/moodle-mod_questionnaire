@@ -3196,6 +3196,9 @@ class questionnaire {
                     if (!isset($allqscore[$qid])) {
                         $allqscore[$qid] = 0;
                     }
+                    if (!isset($qscore[$qid])) {
+                        $qscore[$qid] = 0;
+                    }
                     $questionscore = 0;
                     foreach ($questionresponse as $questionchoice) {
                         $questionscore += $questionchoice->score;
